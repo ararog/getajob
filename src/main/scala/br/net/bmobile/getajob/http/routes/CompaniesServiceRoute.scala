@@ -16,8 +16,10 @@ trait CompaniesServiceRoute extends CompaniesService with BaseServiceRoute with 
 
   val companiesRoute = pathPrefix("companies") {
     pathEndOrSingleSlash {
-      get {
-        complete(getCompanies().map(_.toJson))
+      authenticator.bearerToken(acceptExpired = true) { loggedUser =>
+        get {
+          complete(getCompanies().map(_.toJson))
+        }
       }
     } ~
     pathPrefix("me") {
