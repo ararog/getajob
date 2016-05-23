@@ -49,13 +49,13 @@ trait AuthServiceRoute extends BaseServiceRoute with Security {
     val now = System.currentTimeMillis / 1000L
 
     val token = JsonWebToken(
-      claims = Map("id" -> JsString(user.id.toString), "name" -> JsString(user.username)),
+      claims = Map("id" -> JsString(user.id.get.toString)),
       createdAt = Instant.ofEpochSecond(now),
       expiresAt = Instant.ofEpochSecond(now + lifetime)
     )
     val tokenStr = JsonWebToken.write(token, secret)
 
     val response = OAuth2AccessTokenResponse("bearer", tokenStr, lifetime)
-    complete(OAuth2AccessTokenResponseFormat.write(response).compactPrint)
+    complete(OAuth2AccessTokenResponseFormat.write(response))
   }
 }

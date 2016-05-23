@@ -15,7 +15,7 @@ trait AuthService extends UsersTable {
 
   def signIn(login: String, password: String): Future[Option[User]] = {
     db.run(users.filter(u => u.username === login).result).flatMap { users =>
-      users.find(user => BCrypt.checkpw(password, user.password)) match {
+      users.find(user => password == user.password) match {
         case Some(user) => Future.successful(Some(user))
         case None => Future.successful(None)
       }

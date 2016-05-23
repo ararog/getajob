@@ -17,7 +17,9 @@ trait CandidatesServiceRoute extends CandidatesService with BaseServiceRoute wit
   val candidatesRoute = pathPrefix("candidates") {
     pathEndOrSingleSlash {
       get {
-        complete(getUsers().map(_.toJson))
+        authenticator.bearerToken(acceptExpired = true) { loggedUser =>
+          complete(getUsers().map(_.toJson))
+        }
       }
     } ~
     pathPrefix("me") {
