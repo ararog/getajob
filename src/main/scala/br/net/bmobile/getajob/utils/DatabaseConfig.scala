@@ -1,0 +1,11 @@
+package br.net.bmobile.getajob.utils
+
+trait DatabaseConfig {
+  val driver = slick.driver.PostgresDriver
+
+  import driver.api._
+
+  def db = Database.forConfig("database")
+
+  implicit val session: Session = db.createSession()
+}
