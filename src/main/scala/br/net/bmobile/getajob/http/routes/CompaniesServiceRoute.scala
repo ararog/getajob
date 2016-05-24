@@ -1,16 +1,24 @@
 package br.net.bmobile.getajob.http.routes
 
-import akka.http.scaladsl.model.StatusCodes
+import akka.pattern.ask
+import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.PathMatchers.IntNumber
+import br.net.bmobile.getajob.actors.CompanyActor
+import br.net.bmobile.getajob.actors.CompanyActor.Get
 import br.net.bmobile.getajob.models.{Company, CompanyUpdate}
 import br.net.bmobile.getajob.services.CompaniesService
 import br.net.bmobile.getajob.utils.Security
 import spray.json._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 trait CompaniesServiceRoute extends CompaniesService with BaseServiceRoute with Security {
 
-  import StatusCodes._
+  private implicit val system = ActorSystem()
+
+  val companyActor = system.actorOf(Props(new CompanyActor))
 
   implicit val companiesUpdateFormat = jsonFormat1(CompanyUpdate)
 
@@ -40,7 +48,8 @@ trait CompaniesServiceRoute extends CompaniesService with BaseServiceRoute with 
       pathEndOrSingleSlash {
         authenticator.bearerToken(acceptExpired = true) { loggedUser =>
           get {
-            complete(getCompanyById(id).map(_.toJson))
+            val company:Future[Option[Company]] = (companyActor ? Get(id)).mapTo[Option[Company]]
+            complete(company.map(_.toJson))
           }
         }
       }

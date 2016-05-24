@@ -1,16 +1,24 @@
 package br.net.bmobile.getajob.http.routes
 
-import akka.http.scaladsl.model.StatusCodes
+import akka.pattern.ask
+import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.PathMatchers.IntNumber
-import br.net.bmobile.getajob.models.{CandidateUpdate, User}
+import br.net.bmobile.getajob.actors.CandidateActor.Get
+import br.net.bmobile.getajob.actors.{CandidateActor }
+import br.net.bmobile.getajob.models.{Candidate, CandidateUpdate}
 import br.net.bmobile.getajob.services.CandidatesService
 import br.net.bmobile.getajob.utils.Security
 import spray.json._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 trait CandidatesServiceRoute extends CandidatesService with BaseServiceRoute with Security {
 
-  import StatusCodes._
+  private implicit val system = ActorSystem()
+
+  val candidateActor = system.actorOf(Props(new CandidateActor))
 
   implicit val candidatesUpdateFormat = jsonFormat1(CandidateUpdate)
 
@@ -40,7 +48,8 @@ trait CandidatesServiceRoute extends CandidatesService with BaseServiceRoute wit
       pathEndOrSingleSlash {
         authenticator.bearerToken(acceptExpired = true) { loggedUser =>
           get {
-            complete(getCandidateById(id).map(_.toJson))
+            val candidate:Future[Option[Candidate]] = (candidateActor ? Get(id)).mapTo[Option[Candidate]]
+            complete(candidate.map(_.toJson))
           }
         }
       }
