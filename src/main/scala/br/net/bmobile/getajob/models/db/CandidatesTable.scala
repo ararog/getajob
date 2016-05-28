@@ -13,7 +13,6 @@ trait CandidatesTable extends DatabaseConfig {
   class Candidates(tag: Tag) extends Table[Candidate](tag, "candidates") {
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-
     def * = (id, name) <> ((Candidate.apply _).tupled, Candidate.unapply)
   }
 
