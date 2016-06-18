@@ -3,6 +3,7 @@ package br.net.bmobile.getajob.actors
 import akka.actor.Actor
 import br.net.bmobile.getajob.services.StatesService
 
+import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by rogerio on 28/05/2016.
   */

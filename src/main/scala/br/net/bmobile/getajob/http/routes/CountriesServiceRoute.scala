@@ -1,26 +1,26 @@
 package br.net.bmobile.getajob.http.routes
 
+import akka.pattern.ask
 import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.server.Directives._
-import br.net.bmobile.getajob.actors.CandidateActor
-import br.net.bmobile.getajob.actors.CompanyActor.Get
-import br.net.bmobile.getajob.models.{CandidateUpdate, Company}
-import br.net.bmobile.getajob.services.CandidatesService
+import br.net.bmobile.getajob.actors.{CityActor, CountryActor, StateActor}
+import br.net.bmobile.getajob.models.{Country, State, City}
+import br.net.bmobile.getajob.services.{CountriesService}
 import br.net.bmobile.getajob.utils.Security
 import spray.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CountriesServiceRoute extends CandidatesService with BaseServiceRoute with Security {
+trait CountriesServiceRoute extends BaseServiceRoute with Security {
 
   private implicit val system = ActorSystem()
 
-  val candidateActor = system.actorOf(Props(new CandidateActor))
+  val countryActor = system.actorOf(Props(new CountryActor))
+  val stateActor = system.actorOf(Props(new StateActor))
+  val cityActor = system.actorOf(Props(new CityActor))
 
-  implicit val candidatesUpdateFormat = jsonFormat1(CandidateUpdate)
-
-  val candidatesRoute = pathPrefix("countries") {
+  val countriesRoute = pathPrefix("countries") {
     pathEndOrSingleSlash {
       get {
         authenticator.bearerToken(acceptExpired = true) { loggedUser =>
@@ -32,8 +32,8 @@ trait CountriesServiceRoute extends CandidatesService with BaseServiceRoute with
       pathEndOrSingleSlash {
         authenticator.bearerToken(acceptExpired = true) { loggedUser =>
           get {
-            val company:Future[Option[Company]] = (companyActor ? Get(id)).mapTo[Option[Company]]
-            complete(company.map(_.toJson))
+            val country:Future[Option[Country]] = (countryActor ? CountryActor.Get(id)).mapTo[Option[Country]]
+            complete(country.map(_.toJson))
           }
         }
       } ~
@@ -50,8 +50,8 @@ trait CountriesServiceRoute extends CandidatesService with BaseServiceRoute with
         pathEndOrSingleSlash {
           authenticator.bearerToken(acceptExpired = true) { loggedUser =>
             get {
-              val company: Future[Option[Company]] = (companyActor ? Get(id)).mapTo[Option[Company]]
-              complete(company.map(_.toJson))
+              val state: Future[Option[State]] = (stateActor ? StateActor.Get(id)).mapTo[Option[State]]
+              complete(state.map(_.toJson))
             }
           }
         } ~
@@ -68,8 +68,8 @@ trait CountriesServiceRoute extends CandidatesService with BaseServiceRoute with
           pathEndOrSingleSlash {
             authenticator.bearerToken(acceptExpired = true) { loggedUser =>
               get {
-                val company: Future[Option[Company]] = (companyActor ? Get(id)).mapTo[Option[Company]]
-                complete(company.map(_.toJson))
+                val city: Future[Option[City]] = (cityActor ? CityActor.Get(id)).mapTo[Option[City]]
+                complete(city.map(_.toJson))
               }
             }
           }

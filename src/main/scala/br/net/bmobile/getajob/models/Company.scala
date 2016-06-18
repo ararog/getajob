@@ -1,6 +1,6 @@
 package br.net.bmobile.getajob.models
 
-case class Company(id: Option[Long] = None, name: String)
+case class Company(id: Long, name: String)
 
 case class CompanyUpdate(name: Option[String] = None) {
   def merge(company: Company): Company = {

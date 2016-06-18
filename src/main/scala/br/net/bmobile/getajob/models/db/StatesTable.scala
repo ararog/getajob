@@ -14,7 +14,7 @@ trait StatesTable extends DatabaseConfig with CountriesTable {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def countryId = column[Long]("country_id")
-    def * = (id, name) <> ((State.apply _).tupled, State.unapply)
+    def * = (id, name, countryId) <> ((State.apply _).tupled, State.unapply)
 
     def country = foreignKey("FK_STATE_COUNTRY", countryId, countries)(_.id)
   }

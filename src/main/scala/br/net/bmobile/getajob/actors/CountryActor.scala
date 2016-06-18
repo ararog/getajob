@@ -3,6 +3,7 @@ package br.net.bmobile.getajob.actors
 import akka.actor.Actor
 import br.net.bmobile.getajob.services.CountriesService
 
+import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by rogerio on 28/05/2016.
   */
@@ -18,6 +19,6 @@ class CountryActor extends Actor with CountriesService{
   def receive = {
     case Get(id) =>
       val originalSender = sender
-      pipe(getCandidateById(id)) to originalSender
+      pipe(getCountryById(id)) to originalSender
   }
 }

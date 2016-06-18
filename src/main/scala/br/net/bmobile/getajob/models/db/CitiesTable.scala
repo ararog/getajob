@@ -14,7 +14,7 @@ trait CitiesTable extends DatabaseConfig with StatesTable {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def stateId = column[Long]("state_id")
-    def * = (id, name) <> ((City.apply _).tupled, City.unapply)
+    def * = (id, name, stateId) <> ((City.apply _).tupled, City.unapply)
 
     def state = foreignKey("FK_CITY_STATE", stateId, states)(_.id)
   }
