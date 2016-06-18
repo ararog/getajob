@@ -1,5 +1,9 @@
+language: scala
+scala:
+   - 2.11.8
+
 services:
   - postgresql
 
 before_script:
-  - psql -c 'create database getajob-test;' -U postgres
+  - psql -c 'create database getajob_test;' -U postgres
