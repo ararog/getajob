@@ -4,6 +4,8 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
+resolvers += "justwrote" at "http://repo.justwrote.it/releases/"
+
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.6",
   "org.scala-lang" % "scala-reflect" % "2.11.8",
@@ -21,5 +23,6 @@ libraryDependencies ++= Seq(
   "de.choffmeister" %% "auth-common" % "0.2.0",
   "de.choffmeister" %% "auth-akka-http" % "0.2.0",
   "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
-  "org.json4s" % "json4s-jackson_2.11" % "3.3.0"
+  "org.json4s" % "json4s-jackson_2.11" % "3.3.0",
+  "it.justwrote" %% "scala-faker" % "0.3"
 )
